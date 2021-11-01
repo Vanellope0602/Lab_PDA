@@ -96,13 +96,17 @@ if __name__ == '__main__':
     lexer.input(inputString)
     string_tokens = list()
     while True:
-        tok = lexer.token()
+        tok = lexer.token() #会调用到lustre_lex.py当中的正则分析
         if not tok:
             break
         string_tokens.append(tok)
+
     print("Tokens:")
     for string_token in string_tokens:
-        print(string_token)
+        print(string_token) # 打印词法分析内容
+
+
+    # 开始下推自动机内容
     print("===========")
     print("Pda:")
     pda = create_pda(grammarString) # grammarstring是喂进去的文法

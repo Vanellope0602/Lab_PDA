@@ -28,17 +28,18 @@ class StateCounter:
 		self.invalid = [self.stateIndex(s.lower()) for s in [START, END]]
 		self.nameList = []
 
-	#有改动
+	#根据传入参数name获取一个状态 Q_XX
 	def get(self, name = 'A'):
 		index = -1
-		for i,nl in enumerate(self.nameList):
-			if nl[0] == name:
-				index = i
-		if index != -1:
+		for i,nl in enumerate(self.nameList): # enumerate返回(index, <namelist内容>)
+			if nl[0] == name: # namelist是一个二维向量 [name, 计数]
+				index = i		# 找到参数name对应的index
+		if index != -1:		# 找到了name
 			self.nameList[index][1] += 1
+			print("get state 找到", name, ", index = ", index, " , count = ", self.nameList[index][1])
 			return "Q_" + name + str(self.nameList[index][1])
 		else:
-			self.nameList.append([name,0])
+			self.nameList.append([name,0]) # 初始化cnt为 0
 			return "Q_" + name
 		# self.idx += 1
 		# while self.idx in self.invalid:
