@@ -28,6 +28,7 @@ class StateCounter:
 		self.invalid = [self.stateIndex(s.lower()) for s in [START, END]]
 		self.nameList = []
 
+	#有改动
 	def get(self, name = 'A'):
 		index = -1
 		for i,nl in enumerate(self.nameList):

@@ -1,5 +1,6 @@
 import ply.lex as lex
 
+# 关键字,是一个dict，左侧为该Token的value，右侧字典内容是类型, t.type的值
 reserved = {
     'bool': "BOOL",
     'real': "REAL",
@@ -51,6 +52,7 @@ reserved = {
     'var': "VAR"
 }
 
+# 词法分析器必须提供一个标记的列表，这个列表将所有可能的标记告诉分析器, 作为token的Type
 tokens = [
     "INTCONST",  # ++
     "REALCONST",  # ++
@@ -84,9 +86,12 @@ tokens = [
     'TPOINT',  # ..
     'GREATER',  # >
     "LV6ID"  # ++
-] + list(reserved.values())
+] + list(reserved.values()) # 保留字仅放进来 dict 当中的values, 合并成一个大的list
 
+# 每种标记用一个正则表达式规则来表示，每个规则需要以”t_“开头声明表示该声明是对标记的规则定义
+# 紧跟在t_后面的单词，必须跟标记列表中的某个标记名称对应
 
+# 带有一些动作代码的正则表达式规则
 def t_LV6IDREF(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*::[a-zA-Z0-9_]+'
     t.str = str(t.value)
@@ -105,7 +110,7 @@ def t_INTCONST(t):
     t.value = int(t.value)
     return t
 
-
+# 一些简单标记的正则表达式规则
 t_BOOL = r'bool'
 t_REAL = r'real'
 t_IF = r'if'
@@ -176,28 +181,34 @@ t_EXPONENT = r'\^'
 t_POINT = r'\.'
 t_SEMICOLON = r';'
 t_GREATER = r'>'
-t_ignore = ' \t'
+t_ignore = ' \t' # 忽略字符
 
-
+# 首字母应为字母,剩余字母可为字母 数字 下划线, 为自己命名的变量名称(不是保留字的token)
+# r'<正则表达式>' 定义一个识别变量名的规则
+# lv6id = Lustre V6 ID
 def t_LV6ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
+    # 先检查是否是保留字，如果是保留字，则类型 t.type为 key (也就是reserved.get)
+    # 如果不是保留字，则自动将 'LV6ID' 赋值给Type
     t.type = reserved.get(t.value, 'LV6ID')
+
     if not reserved.get(t.value):
-        t.str = t.value
+        t.str = t.value  # 用新的属性str来保存该token的值
         t.value = 'lv6id'
+        print(t.str)
     return t
 
-
+# 定义一个识别换行符的规则，这样就可以追踪行数
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
-
+# 定义一个出错规则
 def t_error(t):
     print("Illegal charactor '%s'" % t.value[0])
     t.lexer.skip(1)
 
-
+# 根据以上规则构建Lexer词法分析器
 lexer = lex.lex()
 
 if __name__ == '__main__':
@@ -212,10 +223,14 @@ if __name__ == '__main__':
     tel
     '''
     lexer.input(data)
+
+    # 开始进行词法分析
     while True:
-        tok = lexer.token()
-        if not tok:
+        tok = lexer.token() #重复调用token()方法来获取标记序列
+        # 返回下一个LexToken类型的标记实例，如果进行到输入字串的尾部时将返回None
+        if not tok: # 没有更多输入了
             break
-        print(tok)
-        if hasattr(tok, 'str'):
-            print(tok.str)
+        print(tok, " " ,tok.type, " ", tok.value) # 打印token的类型和内容(字符串),所在行数, 相对于起始位置的偏移
+        if hasattr(tok, 'str'): # 函数用于判断对象tok是否包含'str'的属性(在识别非保留字的函数lv6id中给了t.str这个str属性)
+            print("该token不是保留字：", tok.str)
+            #print(tok.str)

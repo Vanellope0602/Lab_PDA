@@ -91,6 +91,7 @@ if __name__ == '__main__':
         Y = not pre(X);
     tel
     '''
+    # input String是要识别的程序, lexer.input()将输入分成不同的词
 
     lexer.input(inputString)
     string_tokens = list()
@@ -104,7 +105,7 @@ if __name__ == '__main__':
         print(string_token)
     print("===========")
     print("Pda:")
-    pda = create_pda(grammarString)
+    pda = create_pda(grammarString) # grammarstring是喂进去的文法
     print("===========")
     print("Recognition:")
     reconigtion = Recognition(pda, string_tokens)
