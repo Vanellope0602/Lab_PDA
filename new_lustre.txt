@@ -1,0 +1,271 @@
+Program -> Include PackBody
+        -> Include PackList
+        -> PackBody | PackList
+
+PackList -> OnePack PackList | OnePack
+
+OnePack-> ModelDecl | PackDecl | PackEq
+
+Provides -> provides Provide ; Provides1 | ϵ
+Provides1 -> Provide ; Provides1 | ϵ
+
+Provide -> const lv6id : Type Provide1
+        -> unsafenode lv6id StaticParams Params returns Params
+	    -> node lv6id StaticParams Params returns Params
+	    -> unsafefunction lv6id StaticParams Params returns Params
+	    -> function lv6id StaticParams Params returns Params
+	    -> type OneTypeDecl
+Provide1 -> = Expression | ϵ
+
+ModelDecl -> model lv6id Uses needs StaticParamList ; Provides body PackBody end
+
+PackDecl -> package lv6id Uses Provides body PackBody end
+
+Uses -> uses lv6id Uses1 ; | ϵ
+
+Eq_or_Is -> = | is
+
+PackEq -> package lv6id Eq_or_Is lv6id ( ByNameStaticArgList ) ;
+
+PackBody -> OneDecl PackBody | OneDecl
+
+OneDecl -> ConstDecl | TypeDecl | ExtNodeDecl | NodeDecl
+
+TypedLv6IdsList -> TypedLv6Ids TypedLv6IdsList1
+TypedLv6IdsList1 -> ; TypedLv6Ids TypedLv6IdsList1 | ϵ
+
+TypedLv6Ids-> lv6id Uses1 : Type
+
+TypedValuedLv6Ids -> TypedValuedLv6Id TypedValuedLv6Ids1
+TypedValuedLv6Ids1 ->  ; TypedValuedLv6Id TypedValuedLv6Ids1 | ϵ
+
+TypedValuedLv6Id -> lv6id TypedValuedLv6Id1
+TypedValuedLv6Id1 -> : Type | , lv6id Uses1 : Type | : Type = Expression
+
+ConstDecl->const ConstDeclList
+
+ConstDeclList-> OneConstDecl ; ConstDeclList | OneConstDecl ;
+
+OneConstDecl -> lv6id OneConstDecl1
+OneConstDecl1 ->  : Type | , lv6id { , lv6id } : Type | : Type = Expression | = Expression
+
+TypeDecl -> type TypeDeclList
+
+TypeDeclList-> OneTypeDecl ; TypeDeclList | OneTypeDecl ;
+
+OneTypeDecl -> lv6id OneTypeDecl1 | ϵ
+OneTypeDecl1 -> = OneTypeDecl2
+OneTypeDecl2 -> Type | enum { lv6id Uses1 } | OneTypeDecl3 { TypedValuedLv6Ids OneTypeDecl4 }
+Uses1 ->  , lv6id Uses1 | ϵ
+OneTypeDecl3 -> struct | ϵ
+OneTypeDecl4 -> ; | ϵ
+
+Type -> Type1 Type2
+Type1 ->  bool | int | real | lv6idref
+Type2 ->  ^ Expression Type2 | ϵ
+
+ExtNodeDecl -> ExtNodeDecl1 lv6id Params returns Params OneTypeDecl4
+ExtNodeDecl1 -> externfunction | unsafeexternfunction | externnode | unsafeexternnode 
+
+
+NodeDecl -> LocalNode
+
+LocalNode -> node lv6id StaticParams Params returns Params OneTypeDecl4 LocalDecls Body LocalNode1
+	    -> function lv6id StaticParams Params returns Params OneTypeDecl4 LocalDecls Body LocalNode1
+	    -> node lv6id StaticParams NodeProfileOpt = EffectiveNode OneTypeDecl4
+	    -> function lv6id StaticParams NodeProfileOpt = EffectiveNode OneTypeDecl4
+	    -> unsafenode lv6id StaticParams Params returns Params OneTypeDecl4 LocalDecls Body LocalNode1
+	    -> unsafefunction lv6id StaticParams Params returns Params OneTypeDecl4 LocalDecls Body LocalNode1
+	    -> unsafenode lv6id StaticParams NodeProfileOpt = EffectiveNode OneTypeDecl4
+	    -> unsafefunction lv6id StaticParams NodeProfileOpt = EffectiveNode OneTypeDecl4
+LocalNode1 -> . | OneTypeDecl4
+
+
+NodeProfileOpt-> Params returns Params | ϵ
+
+StaticParams-> << StaticParamList >> | ϵ
+
+StaticParamList -> StaticParam StaticParamList1
+StaticParamList1 -> ; StaticParam StaticParamList1 | ϵ
+
+StaticParam-> type lv6id
+	       -> const lv6id : Type
+	       -> node lv6id Params returns Params
+	       -> function lv6id Params returns Params
+	       -> unsafenode lv6id Params returns Params
+	       -> unsafefunction lv6id Params returns Params
+
+Params -> ( Params1 )
+Params1 ->  VarDeclList OneTypeDecl4 | ϵ
+
+
+LocalDecls -> LocalDeclList | ϵ
+
+LocalDeclList -> OneLocalDecl LocalDeclList | OneLocalDecl
+
+OneLocalDecl-> LocalVars | LocalConsts
+
+LocalConsts -> const ConstDeclList
+
+LocalVars -> var VarDeclList ;
+
+VarDeclList -> VarDecl 
+VarDeclList1 -> ; VarDecl VarDeclList1 | ϵ
+
+VarDecl -> TypedLv6Ids
+	    -> TypedLv6Ids when ClockExpr
+	    -> ( TypedLv6IdsList ) when ClockExpr
+
+Body -> let Body1 tel
+Body1 -> EquationList | ϵ
+
+EquationList -> Equation EquationList | Equation
+
+Equation -> assert Expression ; | Left = Expression ;
+
+Left -> LeftItemList | ( LeftItemList )
+
+LeftItemList -> LeftItem 
+LeftItemList1 ->  , LeftItem LeftItemList1 | ϵ
+
+LeftItem -> lv6id | FieldLeftItem | TableLeftItem
+
+FieldLeftItem -> LeftItem . lv6id
+
+TableLeftItem -> LeftItem TableLeftItem1
+TableLeftItem1 ->  Expression | Select | ϵ
+
+Expression -> Constant
+            -> lv6idref
+            -> not Expression
+            -> - Expression
+            -> pre Expression
+            -> current Expression
+            -> int Expression
+            -> real Expression
+            -> Expression when Expression
+            -> Expression fby Expression
+            -> Expression *> Expression
+            -> Expression and Expression
+            -> Expression or Expression
+            -> Expression xor Expression
+            -> Expression => Expression
+            -> Expression = Expression
+            -> Expression <> Expression	
+            -> Expression < Expression
+            -> Expression <= Expression
+            -> Expression > Expression
+            -> Expression >= Expression
+            -> Expression div Expression
+            -> Expression mod Expression
+            -> Expression - Expression
+            -> Expression + Expression	
+            -> Expression / Expression	
+            -> Expression * Expression
+            -> if Expression then Expression else Expression	
+            -> with Expression then Expression else Expression 
+	        -> # ( ExpressionList )
+            -> nor ( ExpressionList )
+            -> CallByPosExpression
+            -> [ ExpressionList ]
+            -> Expression ^ Expression	
+            -> Expression ^ Expression
+            -> Expression [ Expression ]
+            -> Expression [ Select ]
+            -> Expression . lv6id
+            -> CallByNameExpression
+            -> ( ExpressionList )
+            -> merge lv6id MergeCaseList
+MergeCaseList -> MergeCase MergeCaseList | ϵ
+
+MergeCase -> ( MergeCase1 *> Expression ) | ϵ
+MergeCase1 ->  lv6idref | true | false
+
+ClockExpr-> lv6idref ( lv6id ) | lv6id	| not lv6id | not ( lv6id )
+
+PredefOp -> not | fby | pre | current | *> | and | or | xor | => | = | <> | < | <= | > | >= | div | mod | - | + | / | * | if
+
+CallByPosExpression -> EffectiveNode ( ExpressionList )
+
+EffectiveNode -> lv6idref << StaticArgList >> | lv6idref
+
+StaticArgList -> StaticArg StaticArgList1
+StaticArgList1 -> StaticArgList2 StaticArg StaticArgList1 | ϵ
+StaticArgList2 -> , | ; 
+
+StaticArg -> type Type
+            -> const Expression
+            -> node EffectiveNode
+            -> function EffectiveNode
+            -> PredefOp
+            -> SimpleExp
+            -> SurelyType
+            -> SurelyNode
+
+ByNameStaticArgList -> ByNameStaticArg ByNameStaticArgList1
+ByNameStaticArgList1 -> StaticArgList2 ByNameStaticArg ByNameStaticArgList1 | ϵ
+StaticArgList2 -> , | ;
+
+ByNameStaticArg -> type lv6id = Type
+                -> const lv6id = Expression
+                -> node lv6id = EffectiveNode
+                -> function lv6id = EffectiveNode
+                -> lv6id = PredefOp
+                -> lv6id = SimpleExp
+                -> lv6id = SurelyType
+                -> lv6id = SurelyNode
+
+SurelyNode -> lv6idref << StaticArgList >>
+
+SurelyType -> SureType1 SurelyType2
+SurelyType1 -> bool | int | real
+SurelyType2 -> ^ Expression SurelyType2 | ϵ
+
+SimpleExp -> ϵ
+            -> Constant lv6idref
+            -> SimpleTuple
+            -> not SimpleExp
+            -> - SimpleExp
+            -> SimpleExp and SimpleExp
+            -> SimpleExp or SimpleExp
+            -> SimpleExp xor SimpleExp
+            -> SimpleExp => SimpleExp
+            -> SimpleExp = SimpleExp
+            -> SimpleExp <> SimpleExp
+            -> SimpleExp < SimpleExp
+            -> SimpleExp <= SimpleExp
+            -> SimpleExp > SimpleExp
+            -> SimpleExp >= SimpleExp
+            -> SimpleExp div SimpleExp
+            -> SimpleExp mod SimpleExp
+            -> SimpleExp - SimpleExp
+            -> SimpleExp + SimpleExp
+            -> SimpleExp / SimpleExp
+            -> SimpleExp * SimpleExp
+            -> if SimpleExp then SimpleExp else SimpleExp
+
+SimpleTuple -> ( SimpleExpList ) | ϵ
+
+SimpleExpList -> SimpleExp SimpleExpList1
+SimpleExpList1 -> , SimpleExp SimpleExpList1 | ϵ
+
+CallByNameExpression -> lv6idref { CallByNameExpression1 } | ϵ
+CallByNameExpression1 -> lv6idref with CallByNameParamList OneTypeDecl4 | CallByNameParamList OneTypeDecl4
+
+
+CallByNameParamList -> CallByNameParam CallByNameParamList1
+CallByNameParamList1 -> StaticArgList2 CallByNameParam CallByNameParamList1 | ϵ
+StaticArgList2 -> , | ;
+
+ExpressionList -> Expression ExpressionList1 | ϵ
+ExpressionList1 -> , Expression ExpressionList1 | ϵ
+
+Constant -> true | false | intconst | realconst
+
+Select	-> Expression .. Expression Step
+
+Step	-> step Expression | ϵ
+
+Pragma	-> % TK IDENT : TK IDENT % Pragma | ϵ
+
+Include -> include "<string>"
