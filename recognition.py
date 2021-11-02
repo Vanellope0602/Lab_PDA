@@ -6,8 +6,9 @@ class Recognition():
     def __init__(self, pda, tokens):
         self.pda = pda
         self.stack = list()
-        self.tokens = tokens
+        self.tokens = tokens # 初始化传进来的是token_index
 
+    # strip()函数不加参数时，默认删掉字符串头尾的空白符
     # only accept final state
     def is_accept(self, cur_state, token_index):
         print("cur_state :" + cur_state)
@@ -24,11 +25,11 @@ class Recognition():
             if state.read.strip() == cur_token or state.read.strip() == cfg.EPS:
                 if state.action.strip() == 'POP' and len(self.stack) and state.value.strip() == self.stack[-1].strip():
                     print("=========pop")
-                    print(cur_state)
-                    print(state)
-                    print(self.stack)
-                    print(self.tokens[token_index])
-                    print(str(token_index) + " " + str(len(self.tokens)))
+                    print("cur_state: ", cur_state)
+                    print("state: ",state)
+                    print("Self.Stack: ", self.stack)
+                    print("Self.tokens: ", self.tokens[token_index])
+                    print("token_index: ", str(token_index) + " , token length: " + str(len(self.tokens)))
                     self.stack.pop()
                     if self.is_accept(state.next, token_index if state.read.strip() == cfg.EPS else token_index + 1):
                         return True
@@ -36,11 +37,11 @@ class Recognition():
                         self.stack = cur_stack.copy()
                 elif state.action.strip() == 'PUSH':
                     print("=========push")
-                    print(cur_state)
-                    print(state)
-                    print(self.stack)
-                    print(self.tokens[token_index])
-                    print(str(token_index) + " " + str(len(self.tokens)))
+                    print("cur_state: ", cur_state)
+                    print("state: ", state)
+                    print("Self.Stack: ", self.stack)
+                    print("Self.tokens: ", self.tokens[token_index])
+                    print("token_index: ", str(token_index) + " , token length: " + str(len(self.tokens)))
                     self.stack.append(state.value)
                     if self.is_accept(state.next, token_index if state.read.strip() == cfg.EPS else token_index + 1):
                         return True
@@ -112,8 +113,8 @@ if __name__ == '__main__':
     pda = create_pda(grammarString) # grammarstring是喂进去的文法
     print("===========")
     print("Recognition:")
-    reconigtion = Recognition(pda, string_tokens)
-    result = reconigtion.is_accept('Start',0)
+    reconigtion = Recognition(pda, string_tokens) # 给创建好的PDA和分析好的词法
+    result = reconigtion.is_accept('Start',0) # 当前状态cur_state : Start, token_index:0
     print("===========")
 
     if result:
