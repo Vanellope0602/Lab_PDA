@@ -76,7 +76,7 @@ class ContextFreeGrammar:
 	Be sure to space-separate terminals and non-terminals.
 	"""
 	def __init__(self, grammar: str = None):
-		self.productions = defaultdict(list)
+		self.productions = defaultdict(list) # 创建的空的字典，默认了每个键值对中的值为空的列表
 		self.terminals = set()
 		self.startName = ""
 		if grammar == None: return
@@ -179,6 +179,7 @@ class ContextFreeGrammar:
 	def toPDA(self):
 		return PushdownAutomata(self)
 
+	# 是类的实例化对象用来做“自我介绍”的方法，如果对该方法进行重写，可以为其制作自定义的自我描述信息
 	def __repr__(self):
 		nameWidth = max([len(name) for name in self.productions])
 		res = []
@@ -332,7 +333,7 @@ if __name__ == '__main__':
 		A -> true | false | 0 | 1
 	''')
 	pda = gram.toPDA()
-	print(pda)
+	print("PDA is :\n", pda)
 	simp = pda.toCFG()
 	simp.simplify()
-	print(simp)
+	print("Simplified Grammar:\n", simp)
