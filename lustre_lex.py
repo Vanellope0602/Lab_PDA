@@ -232,5 +232,5 @@ if __name__ == '__main__':
             break
         print(tok, " " ,tok.type, " ", tok.value) # 打印token的类型和内容(字符串),所在行数, 相对于起始位置的偏移
         if hasattr(tok, 'str'): # 函数用于判断对象tok是否包含'str'的属性(在识别非保留字的函数lv6id中给了t.str这个str属性)
-            print("该token不是保留字：", tok.str)
+            print("该token不是保留字: ", tok.str)
             #print(tok.str)

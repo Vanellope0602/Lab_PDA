@@ -83,28 +83,62 @@ if __name__ == '__main__':
     # SimpleTuple -> ( SimpleExpList ) | $
     # """
     grammarString = ""
-    with open("lustre_part.txt") as r_f:
+    with open("lustre_part.txt") as r_f: # lustre_part 测试成功
         for line in r_f.readlines():
             grammarString += line
+            if line == "":
+                print("空行, 截断文法单元: \n", grammarString)
+    # inputString = '''
+    # node EDGE (X: bool) returns (Y: bool);
+    # let
+    #     Y = current (X);
+    # tel
+    # '''
+    # 下面是自己写的实验lustre程序语句
     inputString = '''
-    node EDGE (X: bool) returns (Y: bool);
     let
-        Y = not pre(X);
+    
     tel
-    '''
+    ''' # 可通过
+
+    inputString = '''
+    let
+        X = (Y);
+    tel
+    ''' # 可通过
+
+    inputString = '''
+    let
+        X = pre (Y);
+    tel
+    ''' # 可通过
+
+    inputString = '''
+    let
+        X = pre (Y);
+        assert not (X);
+    tel
+    ''' # 可通过
+
+    inputString = '''
+    let
+        assert (Y);
+        assert not (X);
+    tel
+    ''' # 可通过
     # input String是要识别的程序, lexer.input()将输入分成不同的词
 
-    lexer.input(inputString)
-    string_tokens = list()
-    while True:
-        tok = lexer.token() #会调用到lustre_lex.py当中的正则分析
-        if not tok:
-            break
-        string_tokens.append(tok)
+    # lexer.input(inputString)
+    # string_tokens = list()
+    # while True:
+    #     tok = lexer.token() #会调用到lustre_lex.py当中的正则分析
+    #     if not tok:
+    #         break
+    #     string_tokens.append(tok)
 
-    print("Tokens:")
-    for string_token in string_tokens:
-        print(string_token) # 打印词法分析内容
+    # print("Tokens:")
+    # for string_token in string_tokens:
+    #     print(string_token) # 打印词法分析内容
 
 
     # 开始下推自动机内容
@@ -112,15 +146,16 @@ if __name__ == '__main__':
     print("Pda:")
     pda = create_pda(grammarString) # grammarstring是喂进去的文法
     print("===========")
-    print("Recognition:")
-    reconigtion = Recognition(pda, string_tokens) # 给创建好的PDA和分析好的词法
-    result = reconigtion.is_accept('Start',0) # 当前状态cur_state : Start, token_index:0
-    print("===========")
+    
+    # print("Recognition:")
+    # reconigtion = Recognition(pda, string_tokens) # 给创建好的PDA和分析好的词法
+    # result = reconigtion.is_accept('Start',0) # 当前状态cur_state : Start, token_index:0
+    # print("===========")
 
-    if result:
-        print("result : True")
-    else:
-        print("result : False")
+    # if result:
+    #     print("result : True")
+    # else:
+    #     print("result : False")
     # String_2 = '''
     # node r_edge (X: bool) returns (Y: bool);
     # let

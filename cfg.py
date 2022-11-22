@@ -11,7 +11,7 @@ HUB = 'Q_loop'
 PUSH = 'PUSH'
 POP = 'POP'
 NONTERMINAL = re.compile(r'[A-Z][_A-Za-z0-9]*')
-TERMINAL = re.compile(r'[a-zΔε_0-9*><=+-/";:(){}#.%^\[\],\'@~][a-zA-ZΔε_0-9*><=+-/";:(){}#.%^\[\],\'@~]*')
+TERMINAL = re.compile(r'[a-zΔε_0-9*><=+-/";:(){}#.%^\[\],\'@~?][a-zA-ZΔε_0-9*><=+-/";:(){}#.%^\[\],\'@~?]*')
 
 
 # Raises an error at a specific line

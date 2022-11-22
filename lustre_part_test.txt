@@ -1,0 +1,14 @@
+Body -> let Body_1
+Body_1 -> EquationList tel
+        -> tel
+EquationList -> Equation 
+        -> Equation EquationList
+Equation -> assert Expression ;
+        -> Left = Expression ;
+
+Left -> lv6id
+Expression -> not Expression
+           -> pre Expression
+           -> ( ExpressionList )
+ExpressionList -> lv6id
+               -> $
